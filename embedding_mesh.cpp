@@ -118,6 +118,7 @@ int EmbeddingMesh<T>::SetVoxelDomainAndIndex()
   {
     cells_unique_[i]->SetVoxelDomain();
     cells_unique_[i]->SetVoxelIndex<T>(verts_unique_, grid_line_);
+    idx_to_voxel_.emplace(cells_unique_[i]->idx_, cells_unique_[i]);
   }
 
   return 0;
@@ -168,11 +169,30 @@ int EmbeddingMesh<T>::SetVoxelCorner()
     const int domain_num = cell->domain_verts_.size();
     for (int d = 0; d < domain_num; ++d)
     {
-      cell->voxel_conver_.emplace_back(array<int, 8>{vert_idx+0, vert_idx+1, vert_idx+2, vert_idx+3,
-                                                     vert_idx+4, vert_idx+5, vert_idx+6, vert_idx+7});
-      
-    }
+      cell->domain_corner_.emplace_back(array<int, 8>{vert_idx+0, vert_idx+1, vert_idx+2, vert_idx+3,
+                                                      vert_idx+4, vert_idx+5, vert_idx+6, vert_idx+7});
+      array<T, 2> x_coord = {grid_line_[0][cell->idx_[0]-1], grid_line_[0][cell->idx_[0]]};
+      array<T, 2> y_coord = {grid_line_[1][cell->idx_[1]-1], grid_line_[1][cell->idx_[1]]};
+      array<T, 2> z_coord = {grid_line_[2][cell->idx_[2]-1], grid_line_[2][cell->idx_[2]]};
+      corner_coordinates_.emplace(vert_idx+0, array<T, 3>{x_coord[0], y_coord[0], z_coord[0]});
+      corner_coordinates_.emplace(vert_idx+1, array<T, 3>{x_coord[1], y_coord[0], z_coord[0]});
+      corner_coordinates_.emplace(vert_idx+2, array<T, 3>{x_coord[1], y_coord[1], z_coord[0]});
+      corner_coordinates_.emplace(vert_idx+3, array<T, 3>{x_coord[0], y_coord[1], z_coord[0]});
 
+      corner_coordinates_.emplace(vert_idx+4, array<T, 3>{x_coord[0], y_coord[0], z_coord[1]});
+      corner_coordinates_.emplace(vert_idx+5, array<T, 3>{x_coord[1], y_coord[0], z_coord[1]});
+      corner_coordinates_.emplace(vert_idx+6, array<T, 3>{x_coord[1], y_coord[1], z_coord[1]});
+      corner_coordinates_.emplace(vert_idx+7, array<T, 3>{x_coord[0], y_coord[1], z_coord[1]});
+
+      vert_idx += 8;
+    }
   }
 
+  return 0;
+}
+
+template<typename T>
+int EmbeddingMesh<T>::SetVoxelNeighbor()
+{
+  
 }

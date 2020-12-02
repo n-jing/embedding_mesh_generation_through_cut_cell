@@ -40,8 +40,8 @@ public:
 // private:
   std::vector<std::vector<int>> all_face_;
   std::vector<std::unordered_set<int>> domain_verts_;
-  std::vector<std::array<int, 8>> voxel_conver_;
-  std::vector<Neighbor> neighbor_voxel_;
+  std::vector<std::array<int, 8>> domain_corner_;
+  std::vector<std::vector<int>> neighbor_domain_;
   
   std::set<int> voxel_verts_;
   int copy_num_;
@@ -58,6 +58,7 @@ public:
   int RemoveDuplicateVerts();
   int SetVoxelDomainAndIndex();
   int SetVoxelCorner();
+  int SetVoxelNeighbor();
 // private:
 
 // private:
@@ -66,10 +67,13 @@ public:
   
   std::vector<Verts<T>> verts_unique_;
   std::vector<std::shared_ptr<Voxel>> cells_unique_;
+  std::unordered_map<int, std::pair<std::array<int, 3>, int>> id_to_domain_;
+  
   std::unordered_map<std::array<int, 3>, std::shared_ptr<Voxel>,
                      Jing::KeyHash<std::array<int, 3>, 0>, Jing::KeyEqual<std::array<int, 3>, 0>> idx_to_voxel_;
   
   std::array<std::vector<T>, 3> grid_line_;
+  std::unordered_map<int, std::array<T, 3>> corner_coordinates_;
 };
 
 template class Verts<float>;
