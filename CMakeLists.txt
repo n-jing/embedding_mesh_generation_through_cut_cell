@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "-Wall -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
 
-ADD_LIBRARY(embed voxel.cpp embedding_mesh.cpp)
+ADD_LIBRARY(embed voxel.cpp embedding_mesh.cpp mesh_write.cpp)
 ADD_EXECUTABLE(demo main.cpp)
 TARGET_LINK_LIBRARIES(demo embed)
 

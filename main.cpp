@@ -11,7 +11,10 @@ int main (int argc, char *argv[])
   EmbeddingMesh<FLOAT> embedding_mesh(argv[1]);
   embedding_mesh.RemoveDuplicateVerts();
   embedding_mesh.SetVoxelDomainAndIndex();
-  embedding_mesh.SetVoxelCorner();
+  embedding_mesh.SetDomainCorner();
+  embedding_mesh.SetDomainNeighbor();
+  embedding_mesh.MergeDuplicateVerts();
+  embedding_mesh.WriteMesh("out.vtk");
   
   cout << "cell num:" << embedding_mesh.cells_unique_.size() << endl;
   for (auto &v : embedding_mesh.idx_to_voxel_)

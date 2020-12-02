@@ -8,8 +8,9 @@
 #include <set>
 #include <unordered_map>
 #include <memory>
+#include <map>
 #include "key_comparison.h"
-
+#include "union_find_set.h"
 
 template<typename T>
 struct Verts
@@ -40,8 +41,9 @@ public:
 // private:
   std::vector<std::vector<int>> all_face_;
   std::vector<std::unordered_set<int>> domain_verts_;
+  std::vector<int> domain_id_;
   std::vector<std::array<int, 8>> domain_corner_;
-  std::vector<std::vector<int>> neighbor_domain_;
+  std::vector<std::set<int>> neighbor_domain_;
   
   std::set<int> voxel_verts_;
   int copy_num_;
@@ -54,12 +56,17 @@ class EmbeddingMesh
 public:
   EmbeddingMesh(const char *path);
   int GetGridLine(const char *path);
+  int WriteMesh(const char *path) const;
   
   int RemoveDuplicateVerts();
   int SetVoxelDomainAndIndex();
-  int SetVoxelCorner();
-  int SetVoxelNeighbor();
+  int SetDomainCorner();
+  int SetDomainNeighbor();
+  int MergeDuplicateVerts();
+
 // private:
+
+  int ConnectTwoVoxel(std::shared_ptr<Voxel> &a, std::shared_ptr<Voxel> &b);
 
 // private:
   std::vector<Verts<T>> verts_;
@@ -74,6 +81,9 @@ public:
   
   std::array<std::vector<T>, 3> grid_line_;
   std::unordered_map<int, std::array<T, 3>> corner_coordinates_;
+
+  UnionFindSet mesh_verts_union_;
+  std::unordered_map<size_t, std::vector<size_t>> verts_group_;
 };
 
 template class Verts<float>;
