@@ -6,6 +6,9 @@
 #include <vector>
 #include <unordered_set>
 #include <set>
+#include <unordered_map>
+#include <memory>
+#include "key_comparison.h"
 
 
 template<typename T>
@@ -17,6 +20,10 @@ struct Verts
   std::array<T, 3> v_;
 };
 
+struct Neighbor
+{
+  std::vector<std::array<int, 3>> idx_;
+};
 
 class Voxel
 {
@@ -33,8 +40,8 @@ public:
 // private:
   std::vector<std::vector<int>> all_face_;
   std::vector<std::unordered_set<int>> domain_verts_;
-  // std::vector<std::array<int, 8>> voxel_conver_;
-  // std::vector<>
+  std::vector<std::array<int, 8>> voxel_conver_;
+  std::vector<Neighbor> neighbor_voxel_;
   
   std::set<int> voxel_verts_;
   int copy_num_;
@@ -50,18 +57,17 @@ public:
   
   int RemoveDuplicateVerts();
   int SetVoxelDomainAndIndex();
+  int SetVoxelCorner();
 // private:
 
-  std::vector<Verts<T>> 
-
-  
 // private:
   std::vector<Verts<T>> verts_;
   std::vector<Voxel> cells_;
   
   std::vector<Verts<T>> verts_unique_;
-  std::vector<Voxel> cells_unique_;
-  
+  std::vector<std::shared_ptr<Voxel>> cells_unique_;
+  std::unordered_map<std::array<int, 3>, std::shared_ptr<Voxel>,
+                     Jing::KeyHash<std::array<int, 3>, 0>, Jing::KeyEqual<std::array<int, 3>, 0>> idx_to_voxel_;
   
   std::array<std::vector<T>, 3> grid_line_;
 };

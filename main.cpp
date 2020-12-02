@@ -15,7 +15,7 @@ int main (int argc, char *argv[])
   cout << "cell num:" << embedding_mesh.cells_unique_.size() << endl;
   for (auto &v : embedding_mesh.cells_unique_)
   {
-    cerr << v.domain_verts_.size() << " " << v.idx_[0] << " " << v.idx_[1] << " " << v.idx_[2] << endl;
+    cerr << v->domain_verts_.size() << " " << v->idx_[0] << " " << v->idx_[1] << " " << v->idx_[2] << endl;
   }
 
   

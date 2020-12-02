@@ -93,18 +93,19 @@ int EmbeddingMesh<T>::RemoveDuplicateVerts()
       old_to_new_id.emplace(v, verts_to_id.at(verts_[v].v_));
   }
 
-  cells_unique_ = cells_;
   for (int c = 0; c < cells_.size(); ++c)
   {
+    Voxel cell_u = cells_[c];
     for (int p = 0; p < cells_[c].all_face_.size(); ++p)
     {
       const vector<int> &face_v = cells_[c].all_face_[p];
       for (int q = 0; q < face_v.size(); ++q)
       {
         assert(old_to_new_id.count(face_v[q]));
-        cells_unique_[c].all_face_[p][q] = old_to_new_id.at(face_v[q]);
+        cell_u.all_face_[p][q] = old_to_new_id.at(face_v[q]);
       }
     }
+    cells_unique_.push_back(make_shared<Voxel>(cell_u));
   }
 
   return 0;
@@ -115,8 +116,8 @@ int EmbeddingMesh<T>::SetVoxelDomainAndIndex()
 {
   for (int i = 0; i < cells_unique_.size(); ++i)
   {
-    cells_unique_[i].SetVoxelDomain();
-    cells_unique_[i].SetVoxelIndex<T>(verts_unique_, grid_line_);
+    cells_unique_[i]->SetVoxelDomain();
+    cells_unique_[i]->SetVoxelIndex<T>(verts_unique_, grid_line_);
   }
 
   return 0;
@@ -155,3 +156,23 @@ int EmbeddingMesh<T>::GetGridLine(const char *path)
   return 0;
 }
 
+
+template<typename T>
+int EmbeddingMesh<T>::SetVoxelCorner()
+{
+  const int cells_num = cells_unique_.size();
+  int vert_idx = 0;
+  for (int c = 0; c < cells_num; ++c)
+  {
+    std::shared_ptr<Voxel> &cell = cells_unique_[c];
+    const int domain_num = cell->domain_verts_.size();
+    for (int d = 0; d < domain_num; ++d)
+    {
+      cell->voxel_conver_.emplace_back(array<int, 8>{vert_idx+0, vert_idx+1, vert_idx+2, vert_idx+3,
+                                                     vert_idx+4, vert_idx+5, vert_idx+6, vert_idx+7});
+      
+    }
+
+  }
+
+}
