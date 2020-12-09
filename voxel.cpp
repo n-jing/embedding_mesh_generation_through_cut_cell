@@ -48,8 +48,51 @@ int Voxel::SetVoxelDomain()
     domain_verts_.push_back(g_v);
   }
 
+  UnionFindSet face_union_find(all_face_.size());
+  const int face_num = all_face_.size();
+  for (int fi = 0; fi < face_num; ++fi)
+  {
+    for (int fj = fi+1; fj < face_num; ++fj)
+    {
+      const std::vector<int> &fa = all_face_.at(fi);
+      const std::vector<int> &fb = all_face_.at(fj);
+      bool is_c = IsFaceConnect(fa, fb);
+      if (is_c)
+        face_union_find.set_union(fi, fj);
+    }
+  }
+
+  unordered_map<size_t, vector<size_t>> face_group = face_union_find.get_group();
+  for (auto &g : face_group)
+  {
+    std::vector<std::vector<int>> domain_f;
+    for (auto &f : g.second)
+    {
+      domain_f.push_back(all_face_[f]);
+    }
+    domain_face_.push_back(domain_f);
+  }
+
   return 0;
 }
+
+bool Voxel::IsFaceConnect(const std::vector<int> &fa, const std::vector<int> &fb)
+{
+  for (auto va : fa)
+  {
+    for (auto vb : fb)
+    {
+      for (auto &d : domain_verts_)
+      {
+        if (d.count(va) && d.count(vb))
+          return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 
 template<typename T>
 int Voxel::SetVoxelIndex(const std::vector<Verts<T>> &verts, const std::array<std::vector<T>, 3> &grid_line)

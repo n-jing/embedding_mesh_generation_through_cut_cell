@@ -11,23 +11,20 @@ int main (int argc, char *argv[])
   EmbeddingMesh<FLOAT> embedding_mesh(argv[1]);
   embedding_mesh.RemoveDuplicateVerts();
   embedding_mesh.SetVoxelDomainAndIndex();
+#ifdef SEPERATE_CELL
+  embedding_mesh.WriteCutCell(argv[3]);
+#endif
   embedding_mesh.SetDomainCorner();
   embedding_mesh.SetDomainNeighbor();
   embedding_mesh.MergeDuplicateVerts();
-  embedding_mesh.WriteMesh("out.vtk");
+
+  string out(argv[1]);
+  if (argc == 1)
+    out = out.substr(0, out.rfind(".")) + "_hex.vtk";
+  else
+    out = string(argv[2]);
   
-  cout << "cell num:" << embedding_mesh.cells_unique_.size() << endl;
-  for (auto &v : embedding_mesh.idx_to_voxel_)
-  {
-    cerr << v.first[0] << " " << v.first[1] << " " << v.first[2] << "||" << v.second->domain_verts_.size();
-    for (auto &c : v.second->domain_corner_)
-    {
-      cout << c[0] << " " << c[1] << " " << c[2] << " " << c[3] << " "
-           << c[4] << " " << c[5] << " " << c[7] << " " << c[7] << endl;
-    }
-
-  }
-
+  embedding_mesh.WriteMesh(out.c_str());
   
   return 0;
 }

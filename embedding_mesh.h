@@ -34,12 +34,14 @@ public:
   int SetVoxelDomain();
   template<typename T>
   int SetVoxelIndex(const std::vector<Verts<T>> &verts, const std::array<std::vector<T>, 3> &grid_line);
-  
+  bool IsFaceConnect(const std::vector<int> &fa, const std::vector<int> &fb);
+
   template<typename T>
   friend class EmbeddingMesh;
   
 // private:
   std::vector<std::vector<int>> all_face_;
+  std::vector<std::vector<std::vector<int>>> domain_face_;
   std::vector<std::unordered_set<int>> domain_verts_;
   std::vector<int> domain_id_;
   std::vector<std::array<int, 8>> domain_corner_;
@@ -63,7 +65,7 @@ public:
   int SetDomainCorner();
   int SetDomainNeighbor();
   int MergeDuplicateVerts();
-
+  int WriteCutCell(const char *path) const;
 // private:
 
   int ConnectTwoVoxel(std::shared_ptr<Voxel> &a, std::shared_ptr<Voxel> &b);
