@@ -7,10 +7,13 @@
 #include <unordered_set>
 #include <set>
 #include <unordered_map>
+#include <cmath>
 #include <memory>
 #include <map>
 #include "key_comparison.h"
 #include "union_find_set.h"
+
+#define EPS 1e-5
 
 template<typename T>
 struct Verts
@@ -19,6 +22,14 @@ struct Verts
   Verts(const std::array<T, 3> &v) : v_(v) { }
   Verts() { }
   std::array<T, 3> v_;
+  bool operator==(const Verts<T> &va)
+    {
+      if (fabs(v_[0]-va.v_[0]) < EPS
+          && fabs(v_[1]-va.v_[1]) < EPS
+          && fabs(v_[2]-va.v_[2]) < EPS)
+        return true;
+      return false;
+    }
 };
 
 struct Neighbor
@@ -68,11 +79,19 @@ public:
   int WriteCutCell(const char *path) const;
 // private:
 
+  std::vector<int> GetSurfaceVertsDomainId() const { return surface_verts_domain_id_;}
   int ConnectTwoVoxel(std::shared_ptr<Voxel> &a, std::shared_ptr<Voxel> &b);
 
+  int ReadSurface(const char *path);
+  
 // private:
   std::vector<Verts<T>> verts_;
   std::vector<Voxel> cells_;
+
+  std::vector<Verts<T>> surface_verts_;
+  std::vector<int> surface_verts_domain_id_;
+  std::vector<int> surface_verts_to_mesh_verts_;
+  std::unordered_map<int, int> mesh_verts_to_surface_verts_;
   
   std::vector<Verts<T>> verts_unique_;
   std::vector<std::shared_ptr<Voxel>> cells_unique_;

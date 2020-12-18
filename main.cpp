@@ -9,6 +9,7 @@ using FLOAT = double;
 int main (int argc, char *argv[])
 {
   EmbeddingMesh<FLOAT> embedding_mesh(argv[1]);
+  
   embedding_mesh.RemoveDuplicateVerts();
   embedding_mesh.SetVoxelDomainAndIndex();
 #ifdef SEPERATE_CELL
@@ -23,8 +24,14 @@ int main (int argc, char *argv[])
     out = out.substr(0, out.rfind(".")) + "_hex.vtk";
   else
     out = string(argv[2]);
-  
+
   embedding_mesh.WriteMesh(out.c_str());
-  
+
+  const vector<int> &surface_v_domain_id = embedding_mesh.GetSurfaceVertsDomainId();
+  for (auto d : surface_v_domain_id)
+  {
+    cerr << d << " ";
+  }
+  cerr << endl;
   return 0;
 }

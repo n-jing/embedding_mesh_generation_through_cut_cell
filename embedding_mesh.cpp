@@ -6,11 +6,37 @@
 #include <map>
 #include <cassert>
 #include <unordered_map>
+#include <algorithm>
 #include "key_comparison.h"
 
 using namespace std;
 using namespace Jing;
 
+
+template<typename T>
+int EmbeddingMesh<T>::ReadSurface(const char *path)
+{
+  ifstream f_in(path);
+  if (!f_in)
+  {
+    cerr << "[  \033[1;31merror\033[0m  ] " << "not surface obj!" << endl;
+    exit(1);
+  }
+  string str_line;
+  while (!f_in.eof())
+  {
+    getline(f_in, str_line);
+    if (str_line.substr(0, str_line.find(" ")) == "v")
+    {
+      Verts<T> v;
+      sscanf(str_line.c_str(), "v %lf%lf%lf", &v.v_[0], &v.v_[1], &v.v_[2]);
+      surface_verts_.push_back(v);
+    }
+  }
+  f_in.close();
+
+  return 0;
+}
 
 template<typename T>
 EmbeddingMesh<T>::EmbeddingMesh(const char *path)
@@ -20,6 +46,9 @@ EmbeddingMesh<T>::EmbeddingMesh(const char *path)
     cerr << "[  \033[1;31merror\033[0m  ] " << "only vtk format are supported!" << endl;
     exit(1);
   }
+  string surface_path = string(path).substr(0, string(path).rfind(".")) + ".obj";
+  ReadSurface(surface_path.c_str());
+  
   ifstream f_in(path);
   if (!f_in)
   {
@@ -108,6 +137,25 @@ int EmbeddingMesh<T>::RemoveDuplicateVerts()
     cells_unique_.push_back(make_shared<Voxel>(cell_u));
   }
 
+  const int surface_verts_num = surface_verts_.size();
+  surface_verts_to_mesh_verts_ = vector<int>(surface_verts_num);
+  surface_verts_domain_id_ = vector<int>(surface_verts_num);
+  for (int v = 0; v < surface_verts_num; ++v)
+  {
+    auto ptr=find(verts_unique_.begin(), verts_unique_.end(), surface_verts_[v]);
+    cout << surface_verts_[v].v_[0] << " " << surface_verts_[v].v_[1] << " " << surface_verts_[v].v_[2] << endl;
+    int idx = ptr-verts_unique_.begin();
+    cout << verts_unique_[idx].v_[0] << " " << verts_unique_[idx].v_[1] << " " << verts_unique_[idx].v_[2] << endl;
+    if (idx == verts_unique_.size())
+    {
+      cout << idx << " " << verts_unique_.size() << endl;
+      cerr << "error: surface verts not find in cut-cell model" << endl;
+      exit(1);
+    }
+    surface_verts_to_mesh_verts_[v] = idx;
+    mesh_verts_to_surface_verts_[idx] = v;
+  }
+
   return 0;
 }
 
@@ -125,6 +173,23 @@ int EmbeddingMesh<T>::SetVoxelDomainAndIndex()
       voxel->domain_id_.push_back(id_to_domain_.size());
       pair<array<int, 3>, int> p = {voxel->idx_, d};
       id_to_domain_.emplace(id_to_domain_.size(), p);
+    }
+  }
+
+  unordered_set<int> surface_v(surface_verts_to_mesh_verts_.begin(), surface_verts_to_mesh_verts_.end());
+  for (const auto &v : idx_to_voxel_)
+  {
+    const int domain_num = v.second->domain_verts_.size();
+    for (int d = 0; d < domain_num; ++d)
+    {
+      for (auto p : v.second->domain_verts_[d])
+      {
+        if (surface_v.count(p))
+        {
+          int s_v_id = mesh_verts_to_surface_verts_.at(p);
+          surface_verts_domain_id_[s_v_id] = v.second->domain_id_[d];
+        }        
+      }
     }
   }
 
