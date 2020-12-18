@@ -95,7 +95,7 @@ public:
   
   std::vector<Verts<T>> verts_unique_;
   std::vector<std::shared_ptr<Voxel>> cells_unique_;
-  std::unordered_map<int, std::pair<std::array<int, 3>, int>> id_to_domain_;
+  std::map<int, std::pair<std::array<int, 3>, int>> id_to_domain_;
   
   std::unordered_map<std::array<int, 3>, std::shared_ptr<Voxel>,
                      Jing::KeyHash<std::array<int, 3>, 0>, Jing::KeyEqual<std::array<int, 3>, 0>> idx_to_voxel_;

@@ -143,9 +143,9 @@ int EmbeddingMesh<T>::RemoveDuplicateVerts()
   for (int v = 0; v < surface_verts_num; ++v)
   {
     auto ptr=find(verts_unique_.begin(), verts_unique_.end(), surface_verts_[v]);
-    cout << surface_verts_[v].v_[0] << " " << surface_verts_[v].v_[1] << " " << surface_verts_[v].v_[2] << endl;
     int idx = ptr-verts_unique_.begin();
-    cout << verts_unique_[idx].v_[0] << " " << verts_unique_[idx].v_[1] << " " << verts_unique_[idx].v_[2] << endl;
+    // cout << surface_verts_[v].v_[0] << " " << surface_verts_[v].v_[1] << " " << surface_verts_[v].v_[2] << endl;
+    // cout << verts_unique_[idx].v_[0] << " " << verts_unique_[idx].v_[1] << " " << verts_unique_[idx].v_[2] << endl;
     if (idx == verts_unique_.size())
     {
       cout << idx << " " << verts_unique_.size() << endl;

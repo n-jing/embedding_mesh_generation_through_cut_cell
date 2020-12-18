@@ -27,10 +27,11 @@ int main (int argc, char *argv[])
 
   embedding_mesh.WriteMesh(out.c_str());
 
+  cerr << "******************************" << endl;
   const vector<int> &surface_v_domain_id = embedding_mesh.GetSurfaceVertsDomainId();
   for (auto d : surface_v_domain_id)
   {
-    cerr << d << " ";
+    cerr << d << ", ";
   }
   cerr << endl;
   return 0;
