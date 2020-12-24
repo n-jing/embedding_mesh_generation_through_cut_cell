@@ -164,6 +164,7 @@ int EmbeddingMesh<T>::SetVoxelDomainAndIndex()
 {
   for (int i = 0; i < cells_unique_.size(); ++i)
   {
+    cout << "cell:" << i << endl;
     std::shared_ptr<Voxel> &voxel = cells_unique_[i];
     voxel->SetVoxelDomain();
     voxel->SetVoxelIndex<T>(verts_unique_, grid_line_);

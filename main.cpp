@@ -15,6 +15,7 @@ int main (int argc, char *argv[])
 #ifdef SEPERATE_CELL
   embedding_mesh.WriteCutCell(argv[3]);
 #endif
+
   embedding_mesh.SetDomainCorner();
   embedding_mesh.SetDomainNeighbor();
   embedding_mesh.MergeDuplicateVerts();
@@ -28,11 +29,14 @@ int main (int argc, char *argv[])
   embedding_mesh.WriteMesh(out.c_str());
 
   cerr << "******************************" << endl;
+  ofstream f_out_surface_id("surface_id.txt");
   const vector<int> &surface_v_domain_id = embedding_mesh.GetSurfaceVertsDomainId();
   for (auto d : surface_v_domain_id)
   {
-    cerr << d << ", ";
+    cerr << d << " ";
+    f_out_surface_id << d << " ";
   }
   cerr << endl;
+  f_out_surface_id.close();
   return 0;
 }
